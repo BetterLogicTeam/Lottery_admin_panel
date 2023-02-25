@@ -17,6 +17,7 @@ function Login() {
   const [modalShow, setModalShow] = React.useState(false);
   const [isLogin, setisLogin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [spinner, setspinner] = useState(false);
   let location = useLocation();
  
   const history = useNavigate();
@@ -30,6 +31,7 @@ function Login() {
     setIsModalOpen(false);
   };
   const onFinish = async (values) => {
+    setspinner(true);
     console.log("Success:", values);
     let res = await axios.post("https://winner.archiecoin.online/admin_login", {
       email: values.email,
@@ -42,6 +44,7 @@ function Login() {
       setisLogin(true);
       handleCancel();
     } else {
+       setspinner(false);
       toast.error(res.data.msg);
     }
 
@@ -112,7 +115,16 @@ function Login() {
               htmlType="submit"
               className="custom-button2 navmainbt"
             >
-              Submit
+              {spinner == true ? (
+                    <>
+                      {" "}
+                      <p class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </p>
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
             </Button>
           </Form.Item>
           </div>
