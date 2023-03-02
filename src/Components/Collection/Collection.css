@@ -1,8 +1,8 @@
-.text{
+.text {
     padding: 30px 10px;
 }
 
-.ant-table-row .ant-table-row-level-0{
+.ant-table-row .ant-table-row-level-0 {
     padding: 40px 0px !important;
 }
 
@@ -14,24 +14,30 @@
     height: 1.25rem;
 }
 
-@media (min-width: 1024px){
-.lg\:mt-6 {
-    margin-top: 1.5rem;
-}}
+@media (min-width: 1024px) {
+    .lg\:mt-6 {
+        margin-top: 1.5rem;
+    }
+}
 
-@media (min-width: 640px){
-.sm\:px-5 {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-}}
-@media (min-width: 640px){
-.sm\:gap-5 {
-    gap: 1.25rem;
-}}
-@media (min-width: 640px){
-.sm\:grid-cols-4 {
-    grid-template-columns: repeat(4,minmax(0,1fr));
-}}
+@media (min-width: 640px) {
+    .sm\:px-5 {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .sm\:gap-5 {
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .sm\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
 
 .grid {
     display: grid;
@@ -44,6 +50,7 @@
 .bg-slate-100 {
     background-color: #f1f5f9;
 }
+
 .rounded-lg {
     border-radius: 0.5rem;
 }
@@ -63,6 +70,7 @@
 .font-semibold {
     font-weight: 600;
 }
+
 .text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
@@ -86,34 +94,47 @@
     border: none !important;
 }
 
-tbody, td, tfoot, th, thead, tr, .table-bordered{
+tbody,
+td,
+tfoot,
+th,
+thead,
+tr,
+.table-bordered {
     border: none !important;
     padding-top: 27px !important;
     padding-bottom: 27px !important;
 }
 
-tr{
+tr {
     box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px !important;
 }
-.table{
+
+.table {
     --bs-table-hover-bg: none !important;
     --bs-table-active-bg: none !important;
 }
 
-.boxx{
+.boxx {
     margin-bottom: 50px !important;
 }
 
 @media screen and (max-width:700px) {
-    .t_head{
+    .t_head {
         font-size: 14px !important;
     }
 
-    .boxx{
+    .boxx {
         font-size: 12px;
     }
 
-    tbody, td, tfoot, th, thead, tr, .table-bordered{
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr,
+    .table-bordered {
         padding-top: 17px !important;
         padding-bottom: 17px !important;
     }
@@ -124,7 +145,7 @@ tr{
 
 }
 
- .title_admin {
+.title_admin {
     font-size: 55px;
     line-height: 65px;
     font-weight: 700;
@@ -132,4 +153,23 @@ tr{
     display: block;
     color: #5949b3;
     text-transform: uppercase;
+}
+
+.Admin_filter_card {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.Admin_filter_card select {
+    width: 15%;
+    margin-left: 1rem !important;
+    border-radius: 10px;
+    padding: 10px;
+
+}
+
+.Admin_filter_card input {
+    width: 15%;
+    border-radius: 10px;
+    padding: 15px;
 }

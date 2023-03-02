@@ -104,25 +104,31 @@ const emg_data = [
 function Collection() {
   const [filterdata, setfilterdata] = useState("All");
   const history = useNavigate();
-  let isuser= localStorage.getItem("UserAuth")
-  console.log("isuser",isuser);
+  let isuser = localStorage.getItem("UserAuth");
+  console.log("isuser", isuser);
   const [get_lottery_Investor, setget_lottery_Investor] = useState([]);
   const [get_Winner, setget_Winner] = useState([]);
   const [total_entries, settotal_entries] = useState();
   const [total_invested_amount, settotal_invested_amount] = useState();
   const [total_lottery_completed, settotal_lottery_completed] = useState();
   const [total_reward, settotal_reward] = useState();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(5);
   const [currentPage1, setCurrentPage1] = useState(1);
   const [postsPerPage1] = useState(5);
+  const [selectCardNumber, setselectCardNumber] = useState("All")
+  const [DateFilter, setDateFilter] = useState("")
+
+  console.log("DateFilter", DateFilter);
   const get_lottery_investor = async () => {
     try {
-      console.log("Timer", Date("1677155160"));
-      let res = await axios.post("https://winner.archiecoin.online/get_Lotter_invester", {
-        userAddress: filterdata,
-      });
+      let res = await axios.post(
+        "http://localhost:3344/get_Lotter_invester",
+        {
+          card_Number: selectCardNumber,
+          date:DateFilter
+        }
+      );
       setget_lottery_Investor(res.data.data);
       console.log("get_Lotter_invester", res.data.data);
     } catch (e) {
@@ -131,9 +137,12 @@ function Collection() {
   };
   const get_lottery_Winner = async () => {
     try {
-      let res = await axios.post("https://winner.archiecoin.online/get_Winner_list", {
-        userAddress: filterdata,
-      });
+      let res = await axios.post(
+        "https://winner.archiecoin.online/get_Winner_list",
+        {
+          userAddress: filterdata,
+        }
+      );
       setget_Winner(res.data.data);
       console.log("get_Lotter_invester", res.data.data);
     } catch (e) {
@@ -143,10 +152,8 @@ function Collection() {
 
   const lotter_all_data = async () => {
     try {
-      const webSupply = new Web3(
-        "https://data-seed-prebsc-1-s1.binance.org:8545"
-      );
-      let acc = await loadWeb3();
+      const webSupply = new Web3("https://bsc-testnet.public.blastapi.io");
+      // let acc = await loadWeb3();
       const web3 = window.web3;
       let loteryContractOf = new webSupply.eth.Contract(
         loteryContractAbi,
@@ -194,36 +201,37 @@ function Collection() {
     get_lottery_investor();
     get_lottery_Winner();
     lotter_all_data();
-  }, [filterdata]);
+  }, [selectCardNumber,DateFilter]);
 
   return (
     <div>
-        <div className="header-top-area">
-              <div className="container">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="header-top-area-inner">
-                      <a href="" className="logo">
-                        <img src={lucky} alt="" />
-                      </a>
-                      <div className="d-flex">
-                        {/* <Connect_wallet_modal /> */}
-                        <button
-                            class="custom-button2 navmainbt"
-                            onClick={() => (history("/"),localStorage.removeItem("UserAuth"))}
-                          >
-                            Log Out
-                          </button>
-                      </div>
-                    </div>
-                  </div>
+      <div className="header-top-area">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="header-top-area-inner">
+                <a href="" className="logo">
+                  <img src={lucky} alt="" />
+                </a>
+                <div className="d-flex">
+                  {/* <Connect_wallet_modal /> */}
+                  <button
+                    class="custom-button2 navmainbt"
+                    onClick={() => (
+                      history("/"), localStorage.removeItem("UserAuth")
+                    )}
+                  >
+                    Log Out
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container">
         <div className="row">
-         
           <div className="mt-4 mb-5 grid grid-cols-2 gap-3 px-4 sm:mt-5 sm:grid-cols-4 sm:gap-5 sm:px-5 lg:mt-6">
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
               <div className="flex justify-between space-x-1">
@@ -267,6 +275,31 @@ function Collection() {
           <h2 className="title_admin">Lottery Invester</h2>
         </div>
 
+
+        <div  className="Admin_filter_card">
+          <input type="date"  width="10%" onChange={(e)=>setDateFilter(e.target.value)} />
+          <select class="form-select" aria-label="Default select example" onChange={(e)=>setselectCardNumber(e.target.value)}>
+            <option selected>Select Card</option>
+            <option value="All">All</option>
+
+            <option value="10x">10x</option>
+            <option value="20x">20x</option>
+            <option value="50x">50x</option>
+            <option value="100x">100x</option>
+            <option value="250x">250x</option>
+            <option value="500x">500x</option>
+            <option value="1000x">1000x</option>
+            <option value="2500x">2500x</option>
+            <option value="5000x">5000x</option>
+            <option value="10000x">10000x</option>
+            <option value="25000x">25000x</option>
+            <option value="50000x">50000x</option>
+            <option value="100000x">100000x</option>
+            <option value="250000x">250000x</option>
+            <option value="500000x">500000x</option>
+            <option value="1000000x">1000000x</option>
+          </select>
+        </div>{" "}
         <Table responsive border>
           <thead>
             <tr className="t_head">
@@ -279,7 +312,6 @@ function Collection() {
           </thead>
           <tbody>
             {currentTokens.map((item, index) => {
-            
               return (
                 <>
                   <tr className="boxx">
@@ -288,7 +320,8 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     {/* <td>{item.position}</td> */}
                     <td>
-                      {moment((item.time)*1000).format("M/D/YYYY h:m:s A")}
+                      {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
+                      {item.time}
                     </td>
                   </tr>
                 </>
@@ -303,11 +336,9 @@ function Collection() {
             onChange={setPageNumber}
           />
         </div>
-
         <div className="text">
           <h1 className="title_admin">Lottery Winner</h1>
         </div>
-
         <Table responsive border>
           <thead>
             <tr className="t_head">
@@ -329,7 +360,7 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     <td>{item.reward}</td>
                     <td>
-                    {moment((item.time)*1000).format("M/D/YYYY h:m:s A")}
+                      {moment(item.time * 1000).format("M/D/YYYY h:m:s A")}
                     </td>
                   </tr>
                 </>
@@ -350,3 +381,5 @@ function Collection() {
 }
 
 export default Collection;
+
+// node js and express API filter date
