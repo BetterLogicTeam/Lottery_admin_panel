@@ -116,19 +116,25 @@ function Collection() {
   const [postsPerPage] = useState(5);
   const [currentPage1, setCurrentPage1] = useState(1);
   const [postsPerPage1] = useState(5);
-  const [selectCardNumber, setselectCardNumber] = useState("All")
-  const [DateFilter, setDateFilter] = useState("")
+  const [selectCardNumber, setselectCardNumber] = useState("All");
+  const [DateFilter, setDateFilter] = useState("");
+  const [selectCardNumber_Winner, setselectCardNumber_Winner] = useState("All");
+  const [DateFilter_Winner, setDateFilter_Winner] = useState("");
+  const [gameNumber, setgameNumber] = useState("");
+  const [gameNumber_winner, setgameNumber_winner] = useState("");
+
+  const [Select_lottery_details, setSelect_lottery_details] = useState("All");
+  const [total_entries_all, settotal_entries_all] = useState("");
+  const [total_number_Amount, settotal_number_Amount] = useState(0);
 
   console.log("DateFilter", DateFilter);
   const get_lottery_investor = async () => {
     try {
-      let res = await axios.post(
-        "http://localhost:3344/get_Lotter_invester",
-        {
-          card_Number: selectCardNumber,
-          date:DateFilter
-        }
-      );
+      let res = await axios.post("https://winner.archiecoin.online/get_Lotter_invester", {
+        card_Number: selectCardNumber,
+        date: DateFilter,
+        gameNumber: gameNumber,
+      });
       setget_lottery_Investor(res.data.data);
       console.log("get_Lotter_invester", res.data.data);
     } catch (e) {
@@ -137,22 +143,20 @@ function Collection() {
   };
   const get_lottery_Winner = async () => {
     try {
-      let res = await axios.post(
-        "https://winner.archiecoin.online/get_Winner_list",
-        {
-          userAddress: filterdata,
-        }
-      );
+      let res = await axios.post("https://winner.archiecoin.online/get_Winner_list", {
+        card_Number: selectCardNumber_Winner,
+        date: DateFilter_Winner,
+        gameNumber: gameNumber_winner,
+      });
       setget_Winner(res.data.data);
       console.log("get_Lotter_invester", res.data.data);
     } catch (e) {
       console.log("Error While calling API Get lottery Investor", e);
     }
   };
-
+  const webSupply = new Web3("https://bsc-testnet.public.blastapi.io");
   const lotter_all_data = async () => {
     try {
-      const webSupply = new Web3("https://bsc-testnet.public.blastapi.io");
       // let acc = await loadWeb3();
       const web3 = window.web3;
       let loteryContractOf = new webSupply.eth.Contract(
@@ -160,18 +164,39 @@ function Collection() {
         loteryContractAddress
       );
 
-      let total_entries = await loteryContractOf.methods.total_entries().call();
-      settotal_entries(total_entries);
-      let total_invested_amount = await loteryContractOf.methods
-        .total_invested_amount()
-        .call();
-      settotal_invested_amount(total_invested_amount);
-      let total_lottery_completed = await loteryContractOf.methods
-        .total_lottery_completed()
-        .call();
-      settotal_lottery_completed(total_lottery_completed);
-      let total_reward = await loteryContractOf.methods.total_reward().call();
-      settotal_reward(total_reward);
+      if (Select_lottery_details == "All") {
+        let total_entries_all = await loteryContractOf.methods
+          .total_entries()
+          .call();
+
+        settotal_entries_all(total_entries_all);
+        let total_invested_amount = await loteryContractOf.methods
+          .total_invested_amount()
+          .call();
+        total_invested_amount = webSupply.utils.fromWei(total_invested_amount);
+        settotal_invested_amount(total_invested_amount);
+        let total_lottery_completed = await loteryContractOf.methods
+          .total_lottery_completed()
+          .call();
+        settotal_lottery_completed(total_lottery_completed);
+        let total_reward = await loteryContractOf.methods.total_reward().call();
+        settotal_reward(total_reward);
+      } else {
+        let total_entries = await loteryContractOf.methods
+          .lottey_detail(Select_lottery_details)
+          .call();
+
+        let obj = {
+          lottery_entries: total_entries.lottery_entries,
+          lottery_invested_amount: webSupply.utils.fromWei(
+            total_entries.lottery_invested_amount
+          ),
+          lottery_completed: total_entries.lottery_completed,
+          lottery_reward: total_entries.lottery_reward,
+        };
+        console.log("total_entries", obj);
+        settotal_entries(obj);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -197,11 +222,34 @@ function Collection() {
     // setPage(value);
     setCurrentPage1(value);
   };
+  let total_Amount = 0;
+
+  const Total_Amount = async () => {
+    if (currentTokens.length !== 0) {
+      console.log("get_lottery_Investor", get_lottery_Investor);
+      // for(let i=0;i < Object.keys(get_lottery_Investor).length;i++){
+      //   total_Amount = Number(total_Amount) + Number(get_lottery_Investor[i].position)
+      // }
+
+      currentTokens.forEach((items) => {
+        total_Amount = Number(total_Amount) + Number(items.position);
+      });
+      console.log("total_Amount", total_Amount);
+      settotal_number_Amount(total_Amount);
+    }
+  };
+
   useEffect(() => {
     get_lottery_investor();
-    get_lottery_Winner();
     lotter_all_data();
-  }, [selectCardNumber,DateFilter]);
+    setInterval(() => {
+      Total_Amount();
+    }, 1000);
+  }, [selectCardNumber, DateFilter, gameNumber, Select_lottery_details]);
+
+  useEffect(() => {
+    get_lottery_Winner();
+  }, [selectCardNumber_Winner, DateFilter_Winner, gameNumber_winner]);
 
   return (
     <div>
@@ -215,6 +263,7 @@ function Collection() {
                 </a>
                 <div className="d-flex">
                   {/* <Connect_wallet_modal /> */}
+                  {console.log("Select_lottery_details", total_entries)}
                   <button
                     class="custom-button2 navmainbt"
                     onClick={() => (
@@ -232,11 +281,40 @@ function Collection() {
 
       <div className="container">
         <div className="row">
+          <div className="Admin_filter_card">
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              onChange={(e) => setSelect_lottery_details(e.target.value)}
+            >
+              <option selected>Select Card</option>
+              <option value="All">All</option>
+
+              <option value="1">10x</option>
+              <option value="2">20x</option>
+              <option value="3">50x</option>
+              <option value="4">100x</option>
+              <option value="5">250x</option>
+              <option value="6">500x</option>
+              <option value="7">1000x</option>
+              <option value="8">2500x</option>
+              <option value="9">5000x</option>
+              <option value="10">10000x</option>
+              <option value="11">25000x</option>
+              <option value="12">50000x</option>
+              <option value="13">100000x</option>
+              <option value="14">250000x</option>
+              <option value="15">500000x</option>
+              <option value="16">1000000x</option>
+            </select>
+          </div>
           <div className="mt-4 mb-5 grid grid-cols-2 gap-3 px-4 sm:mt-5 sm:grid-cols-4 sm:gap-5 sm:px-5 lg:mt-6">
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
               <div className="flex justify-between space-x-1">
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
-                  {total_entries}
+                  {Select_lottery_details == "All"
+                    ? total_entries_all
+                    : total_entries?.lottery_entries}
                 </p>
                 {emg_data[0].img}
               </div>
@@ -245,7 +323,9 @@ function Collection() {
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
               <div className="flex justify-between space-x-1">
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
-                  {total_invested_amount}
+                  {Select_lottery_details == "All"
+                    ? total_invested_amount
+                    : total_entries?.lottery_invested_amount}
                 </p>
                 {emg_data[1].img}
               </div>
@@ -254,7 +334,9 @@ function Collection() {
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
               <div className="flex justify-between space-x-1">
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
-                  {total_lottery_completed}
+                  {Select_lottery_details == "All"
+                    ? total_lottery_completed
+                    : total_entries?.lottery_completed}
                 </p>
                 {emg_data[2].img}
               </div>
@@ -263,7 +345,9 @@ function Collection() {
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
               <div className="flex justify-between space-x-1">
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
-                  {total_reward}
+                  {Select_lottery_details == "All"
+                    ? total_reward
+                    : total_entries?.lottery_reward}
                 </p>
                 {emg_data[3].img}
               </div>
@@ -274,11 +358,121 @@ function Collection() {
         <div className="text">
           <h2 className="title_admin">Lottery Invester</h2>
         </div>
+        <div className="Admin_filter_card">
+          <input
+            type="number"
+            width="10%"
+            placeholder="Game Number"
+            onChange={(e) => setgameNumber(e.target.value)}
+          />
+          <input
+            type="date"
+            width="10%"
+            onChange={(e) => setDateFilter(e.target.value)}
+          />
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            onChange={(e) => setselectCardNumber(e.target.value)}
+          >
+            <option selected>Select Card</option>
+            <option value="All">All</option>
 
+            <option value="10x">10x</option>
+            <option value="20x">20x</option>
+            <option value="50x">50x</option>
+            <option value="100x">100x</option>
+            <option value="250x">250x</option>
+            <option value="500x">500x</option>
+            <option value="1000x">1000x</option>
+            <option value="2500x">2500x</option>
+            <option value="5000x">5000x</option>
+            <option value="10000x">10000x</option>
+            <option value="25000x">25000x</option>
+            <option value="50000x">50000x</option>
+            <option value="100000x">100000x</option>
+            <option value="250000x">250000x</option>
+            <option value="500000x">500000x</option>
+            <option value="1000000x">1000000x</option>
+          </select>
+        </div>
+        <Table responsive border>
+          <thead>
+            <tr className="t_head">
+              <th>#</th>
+              <th>Investor Address</th>
+              <th>Card Number</th>
+              <th>Game Number</th>
 
-        <div  className="Admin_filter_card">
-          <input type="date"  width="10%" onChange={(e)=>setDateFilter(e.target.value)} />
-          <select class="form-select" aria-label="Default select example" onChange={(e)=>setselectCardNumber(e.target.value)}>
+              <th>Amount</th>
+              <th>Lottery Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* <tr className="boxx">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>Total Amount {total_number_Amount}</td>
+           
+            </tr> */}
+            {currentTokens.map((item, index) => {
+              return (
+                <>
+                  <tr className="boxx">
+                    <td>{index + 1}</td>
+                    <td className="large_address">{item.userAddress}</td>
+                    <td className="responice_addres">{ item.userAddress?.substring(0, 8) + "..." + item.userAddress?.substring(item.userAddress?.length - 8)}</td>
+
+                    <td>{item.card_Number}</td>
+                    <td>{item.gameNumber}</td>
+
+                    <td>{item.position}</td>
+                    <td>
+                      {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
+                      {item.time}
+                    </td>
+                  </tr>
+                </>
+              );
+            })}
+          </tbody>
+        </Table>
+        <div style={{ display: "flex", justifyContent: " flex-end" }}>
+          <div className="d-flex ">
+            <h1 className="fs-4">
+              Total Entries :{get_lottery_Investor.length}{" "}
+            </h1>
+          </div>
+        </div>
+        <div className="d-flex justify-content-center">
+          <Pagination
+            count={Math.ceil(get_lottery_Investor.length / postsPerPage)}
+            page={currentPage}
+            onChange={setPageNumber}
+          />
+        </div>
+        <div className="text">
+          <h1 className="title_admin">Lottery Winner</h1>
+        </div>
+        <div className="Admin_filter_card">
+          <input
+            type="number"
+            width="10%"
+            placeholder="Game Number"
+            onChange={(e) => setgameNumber_winner(e.target.value)}
+          />
+          <input
+            type="date"
+            width="10%"
+            onChange={(e) => setDateFilter_Winner(e.target.value)}
+          />
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            onChange={(e) => setselectCardNumber_Winner(e.target.value)}
+          >
             <option selected>Select Card</option>
             <option value="All">All</option>
 
@@ -304,63 +498,28 @@ function Collection() {
           <thead>
             <tr className="t_head">
               <th>#</th>
-              <th>Investor Address</th>
-              <th>Card Number</th>
-              {/* <th>Position</th> */}
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentTokens.map((item, index) => {
-              return (
-                <>
-                  <tr className="boxx">
-                    <td>{index + 1}</td>
-                    <td>{item.userAddress}</td>
-                    <td>{item.card_Number}</td>
-                    {/* <td>{item.position}</td> */}
-                    <td>
-                      {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
-                      {item.time}
-                    </td>
-                  </tr>
-                </>
-              );
-            })}
-          </tbody>
-        </Table>
-        <div className="d-flex justify-content-center">
-          <Pagination
-            count={Math.ceil(get_lottery_Investor.length / postsPerPage)}
-            page={currentPage}
-            onChange={setPageNumber}
-          />
-        </div>
-        <div className="text">
-          <h1 className="title_admin">Lottery Winner</h1>
-        </div>
-        <Table responsive border>
-          <thead>
-            <tr className="t_head">
-              <th>#</th>
               <th>Winner Address</th>
               <th>Card Number</th>
+              <th>Game Number</th>
               <th>Reward</th>
-              <th>Time</th>
+              <th> Lottery Time</th>
             </tr>
           </thead>
           <tbody>
             {currentTokens1.map((item, index) => {
-              console.log("Dte", Date(item.time));
               return (
                 <>
                   <tr className="boxx">
                     <td>{index + 1}</td>
-                    <td>{item.userAddress}</td>
+                    <td className="large_address">{item.userAddress}</td>
+                    <td className="responice_addres">{ item.userAddress?.substring(0, 8) + "..." + item.userAddress?.substring(item.userAddress?.length - 8)}</td>
                     <td>{item.card_Number}</td>
+                    <td>{item.gameNumber}</td>
+
                     <td>{item.reward}</td>
                     <td>
-                      {moment(item.time * 1000).format("M/D/YYYY h:m:s A")}
+                      {item.time}
+                      {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
                     </td>
                   </tr>
                 </>
@@ -368,6 +527,13 @@ function Collection() {
             })}
           </tbody>
         </Table>
+        <div style={{ display: "flex", justifyContent: " flex-end" }}>
+          <div className="d-flex"  >
+            <h1 className="fs-4" style={{marginLeft:"3rem"}}>
+              Total Entries :{get_Winner.length}{" "}
+            </h1>
+          </div>
+        </div>
         <div className="d-flex justify-content-center">
           <Pagination
             count={Math.ceil(get_Winner.length / postsPerPage1)}

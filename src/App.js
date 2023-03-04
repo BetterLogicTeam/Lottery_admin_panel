@@ -15,17 +15,22 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Collection from './Components/Collection/Collection';
 import ScrollUpButton from "react-scroll-up-button";
+import PrivateRoutes from './Components/Private'
 
 function App() {
   return (
     <div className="">
-      
+
       <BrowserRouter>
         <ToastContainer />
         <ScrollUpButton />
         <Routes>
-          <Route path="/" element={<Login />  } />
-        <Route path="/admin_panel" element={<Collection />  } />
+          <Route path="/" element={<Login />} />
+          <Route element={<PrivateRoutes />}>
+
+<Route path="/admin_panel" element={<Collection />} />
+</Route>
+         
 
         </Routes>
         <Footer />
