@@ -119,7 +119,7 @@ function Login() {
                     <>
                       {" "}
                       <p class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden"></span>
                       </p>
                     </>
                   ) : (

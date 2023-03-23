@@ -1,5 +1,5 @@
 export const loteryContractAddress =
-  "0xF78CBA53a1053eE6757cd6dE4692947695d47298";
+  "0x9b9E0681284aA54928CC1013c34d42Eac346b37d";
 export const loteryContractAbi = [
   {
     inputs: [
@@ -74,13 +74,6 @@ export const loteryContractAbi = [
     name: "WithdrawToken",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "_time",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
     type: "function",
   },
   {

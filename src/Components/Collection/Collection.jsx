@@ -102,6 +102,7 @@ const emg_data = [
 ];
 
 function Collection() {
+  const base_url = process.env.REACT_APP_API_URL;
   const [filterdata, setfilterdata] = useState("All");
   const history = useNavigate();
   let isuser = localStorage.getItem("UserAuth");
@@ -116,12 +117,16 @@ function Collection() {
   const [postsPerPage] = useState(5);
   const [currentPage1, setCurrentPage1] = useState(1);
   const [postsPerPage1] = useState(5);
-  const [selectCardNumber, setselectCardNumber] = useState("All");
-  const [DateFilter, setDateFilter] = useState("");
-  const [selectCardNumber_Winner, setselectCardNumber_Winner] = useState("All");
-  const [DateFilter_Winner, setDateFilter_Winner] = useState("");
-  const [gameNumber, setgameNumber] = useState("");
-  const [gameNumber_winner, setgameNumber_winner] = useState("");
+  const [selectCardNumber, setselectCardNumber] = useState(0);
+  const [DateFilter, setDateFilter] = useState();
+  const [StartDateFilter, setStartDateFilter] = useState(0);
+
+  const [selectCardNumber_Winner, setselectCardNumber_Winner] = useState(0);
+  const [DateFilter_Winner, setDateFilter_Winner] = useState(0);
+  const [endDate, setendDate] = useState(0);
+
+  const [gameNumber, setgameNumber] = useState(0);
+  const [gameNumber_winner, setgameNumber_winner] = useState(0);
 
   const [Select_lottery_details, setSelect_lottery_details] = useState("All");
   const [total_entries_all, settotal_entries_all] = useState("");
@@ -130,26 +135,29 @@ function Collection() {
   console.log("DateFilter", DateFilter);
   const get_lottery_investor = async () => {
     try {
-      let res = await axios.post("https://winner.archiecoin.online/get_Lotter_invester", {
-        card_Number: selectCardNumber,
-        date: DateFilter,
-        gameNumber: gameNumber,
-      });
-      setget_lottery_Investor(res.data.data);
-      console.log("get_Lotter_invester", res.data.data);
+      const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&gameNumber=${gameNumber}&card_Number=${selectCardNumber}`;
+      let res = await axios.get(url);
+      // let res = await axios.post(
+      //   "https://winner.archiecoin.online/get_Lotter_invester",
+      //   {
+      //     card_Number: selectCardNumber,
+      //     date: DateFilter,
+      //     gameNumber: gameNumber,
+      //   }
+      // );
+      console.log("get_Lotter_invester", res.data);
+      setget_lottery_Investor(res.data);
     } catch (e) {
       console.log("Error While calling API Get lottery Investor", e);
     }
   };
   const get_lottery_Winner = async () => {
     try {
-      let res = await axios.post("https://winner.archiecoin.online/get_Winner_list", {
-        card_Number: selectCardNumber_Winner,
-        date: DateFilter_Winner,
-        gameNumber: gameNumber_winner,
-      });
-      setget_Winner(res.data.data);
-      console.log("get_Lotter_invester", res.data.data);
+      const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&gameNumber=${gameNumber_winner}&card_Number=${selectCardNumber_Winner}`;
+      let res = await axios.get(url);
+      console.log("get_lottery_Winner", res.data);
+
+      setget_Winner(res.data);
     } catch (e) {
       console.log("Error While calling API Get lottery Investor", e);
     }
@@ -180,11 +188,12 @@ function Collection() {
           .call();
         settotal_lottery_completed(total_lottery_completed);
         let total_reward = await loteryContractOf.methods.total_reward().call();
-        settotal_reward(total_reward);
+        settotal_reward(webSupply.utils.fromWei(total_reward));
       } else {
         let total_entries = await loteryContractOf.methods
           .lottey_detail(Select_lottery_details)
           .call();
+          console.log("total_entries",total_entries);
 
         let obj = {
           lottery_entries: total_entries.lottery_entries,
@@ -192,7 +201,7 @@ function Collection() {
             total_entries.lottery_invested_amount
           ),
           lottery_completed: total_entries.lottery_completed,
-          lottery_reward: total_entries.lottery_reward,
+          lottery_reward: webSupply.utils.fromWei(total_entries.lottery_reward),
         };
         console.log("total_entries", obj);
         settotal_entries(obj);
@@ -245,11 +254,17 @@ function Collection() {
     setInterval(() => {
       Total_Amount();
     }, 1000);
-  }, [selectCardNumber, DateFilter, gameNumber, Select_lottery_details]);
+  }, [
+    selectCardNumber,
+    DateFilter,
+    gameNumber,
+    Select_lottery_details,
+    StartDateFilter,
+  ]);
 
   useEffect(() => {
     get_lottery_Winner();
-  }, [selectCardNumber_Winner, DateFilter_Winner, gameNumber_winner]);
+  }, [selectCardNumber_Winner, DateFilter_Winner, gameNumber_winner, endDate]);
 
   return (
     <div>
@@ -282,8 +297,10 @@ function Collection() {
       <div className="container">
         <div className="row">
           <div className="Admin_filter_card">
+            <div>
+              <p>Select Card Number</p>
             <select
-              class="form-select"
+              class="form-select_top"
               aria-label="Default select example"
               onChange={(e) => setSelect_lottery_details(e.target.value)}
             >
@@ -307,6 +324,7 @@ function Collection() {
               <option value="15">500000x</option>
               <option value="16">1000000x</option>
             </select>
+            </div>
           </div>
           <div className="mt-4 mb-5 grid grid-cols-2 gap-3 px-4 sm:mt-5 sm:grid-cols-4 sm:gap-5 sm:px-5 lg:mt-6">
             <div className="rounded-lg bg-slate-100 p-4 dark:bg-navy-600">
@@ -359,42 +377,60 @@ function Collection() {
           <h2 className="title_admin">Lottery Invester</h2>
         </div>
         <div className="Admin_filter_card">
-          <input
-            type="number"
-            width="10%"
-            placeholder="Game Number"
-            onChange={(e) => setgameNumber(e.target.value)}
-          />
-          <input
-            type="date"
-            width="10%"
-            onChange={(e) => setDateFilter(e.target.value)}
-          />
-          <select
-            class="form-select"
-            aria-label="Default select example"
-            onChange={(e) => setselectCardNumber(e.target.value)}
-          >
-            <option selected>Select Card</option>
-            <option value="All">All</option>
+          <div>
+            <p>Select Game Number</p>
+            <input
+              type="number"
+              width="10%"
+              placeholder="Game Number"
+              onChange={(e) => setgameNumber(e.target.value)}
+            />
+          </div>
+          <div>
+            <p>Start Date</p>
+            <input
+              type="date"
+              width="10%"
+              onChange={(e) => setStartDateFilter(e.target.value)}
+            />
+          </div>
+          <div>
+            <p>End Date</p>
+            <input
+              type="date"
+              width="10%"
+              onChange={(e) => setDateFilter(e.target.value)}
+            />
+          </div>
 
-            <option value="10x">10x</option>
-            <option value="20x">20x</option>
-            <option value="50x">50x</option>
-            <option value="100x">100x</option>
-            <option value="250x">250x</option>
-            <option value="500x">500x</option>
-            <option value="1000x">1000x</option>
-            <option value="2500x">2500x</option>
-            <option value="5000x">5000x</option>
-            <option value="10000x">10000x</option>
-            <option value="25000x">25000x</option>
-            <option value="50000x">50000x</option>
-            <option value="100000x">100000x</option>
-            <option value="250000x">250000x</option>
-            <option value="500000x">500000x</option>
-            <option value="1000000x">1000000x</option>
-          </select>
+          <div>
+            <p>Select Card Number </p>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              onChange={(e) => setselectCardNumber(e.target.value)}
+            >
+              <option selected>Select Card</option>
+              <option value="0">All</option>
+
+              <option value="10x">10x</option>
+              <option value="20x">20x</option>
+              <option value="50x">50x</option>
+              <option value="100x">100x</option>
+              <option value="250x">250x</option>
+              <option value="500x">500x</option>
+              <option value="1000x">1000x</option>
+              <option value="2500x">2500x</option>
+              <option value="5000x">5000x</option>
+              <option value="10000x">10000x</option>
+              <option value="25000x">25000x</option>
+              <option value="50000x">50000x</option>
+              <option value="100000x">100000x</option>
+              <option value="250000x">250000x</option>
+              <option value="500000x">500000x</option>
+              <option value="1000000x">1000000x</option>
+            </select>
+          </div>
         </div>
         <Table responsive border>
           <thead>
@@ -423,7 +459,13 @@ function Collection() {
                   <tr className="boxx">
                     <td>{index + 1}</td>
                     <td className="large_address">{item.userAddress}</td>
-                    <td className="responice_addres">{ item.userAddress?.substring(0, 8) + "..." + item.userAddress?.substring(item.userAddress?.length - 8)}</td>
+                    <td className="responice_addres">
+                      {item.userAddress?.substring(0, 8) +
+                        "..." +
+                        item.userAddress?.substring(
+                          item.userAddress?.length - 8
+                        )}
+                    </td>
 
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
@@ -457,42 +499,60 @@ function Collection() {
           <h1 className="title_admin">Lottery Winner</h1>
         </div>
         <div className="Admin_filter_card">
-          <input
-            type="number"
-            width="10%"
-            placeholder="Game Number"
-            onChange={(e) => setgameNumber_winner(e.target.value)}
-          />
-          <input
-            type="date"
-            width="10%"
-            onChange={(e) => setDateFilter_Winner(e.target.value)}
-          />
-          <select
-            class="form-select"
-            aria-label="Default select example"
-            onChange={(e) => setselectCardNumber_Winner(e.target.value)}
-          >
-            <option selected>Select Card</option>
-            <option value="All">All</option>
+          <div>
+            <p>Select Game Number</p>
+            <input
+              type="number"
+              width="10%"
+              placeholder="Game Number"
+              onChange={(e) => setgameNumber_winner(e.target.value)}
+            />
+          </div>
+          <div>
+            <p> Start Date</p>
+            <input
+              type="date"
+              width="10%"
+              onChange={(e) => setDateFilter_Winner(e.target.value)}
+            />
+          </div>
+          <div className="">
+            <p>End Date</p>
+            <input
+              type="date"
+              width="100%"
+              onChange={(e) => setendDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <p>Select Card Number</p>
 
-            <option value="10x">10x</option>
-            <option value="20x">20x</option>
-            <option value="50x">50x</option>
-            <option value="100x">100x</option>
-            <option value="250x">250x</option>
-            <option value="500x">500x</option>
-            <option value="1000x">1000x</option>
-            <option value="2500x">2500x</option>
-            <option value="5000x">5000x</option>
-            <option value="10000x">10000x</option>
-            <option value="25000x">25000x</option>
-            <option value="50000x">50000x</option>
-            <option value="100000x">100000x</option>
-            <option value="250000x">250000x</option>
-            <option value="500000x">500000x</option>
-            <option value="1000000x">1000000x</option>
-          </select>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              onChange={(e) => setselectCardNumber_Winner(e.target.value)}
+            >
+              <option selected>Select Card</option>
+              <option value="0">All</option>
+
+              <option value="10x">10x</option>
+              <option value="20x">20x</option>
+              <option value="50x">50x</option>
+              <option value="100x">100x</option>
+              <option value="250x">250x</option>
+              <option value="500x">500x</option>
+              <option value="1000x">1000x</option>
+              <option value="2500x">2500x</option>
+              <option value="5000x">5000x</option>
+              <option value="10000x">10000x</option>
+              <option value="25000x">25000x</option>
+              <option value="50000x">50000x</option>
+              <option value="100000x">100000x</option>
+              <option value="250000x">250000x</option>
+              <option value="500000x">500000x</option>
+              <option value="1000000x">1000000x</option>
+            </select>
+          </div>
         </div>{" "}
         <Table responsive border>
           <thead>
@@ -512,11 +572,17 @@ function Collection() {
                   <tr className="boxx">
                     <td>{index + 1}</td>
                     <td className="large_address">{item.userAddress}</td>
-                    <td className="responice_addres">{ item.userAddress?.substring(0, 8) + "..." + item.userAddress?.substring(item.userAddress?.length - 8)}</td>
+                    <td className="responice_addres">
+                      {item.userAddress?.substring(0, 8) +
+                        "..." +
+                        item.userAddress?.substring(
+                          item.userAddress?.length - 8
+                        )}
+                    </td>
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
 
-                    <td>{item.reward}</td>
+                    <td>{webSupply.utils.fromWei(item.reward)}</td>
                     <td>
                       {item.time}
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
@@ -528,8 +594,8 @@ function Collection() {
           </tbody>
         </Table>
         <div style={{ display: "flex", justifyContent: " flex-end" }}>
-          <div className="d-flex"  >
-            <h1 className="fs-4" style={{marginLeft:"3rem"}}>
+          <div className="d-flex">
+            <h1 className="fs-4" style={{ marginLeft: "3rem" }}>
               Total Entries :{get_Winner.length}{" "}
             </h1>
           </div>

@@ -28,9 +28,9 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route element={<PrivateRoutes />}>
 
-<Route path="/admin_panel" element={<Collection />} />
-</Route>
-         
+            <Route path="/admin_panel" element={<Collection />} />
+          </Route>
+
 
         </Routes>
         <Footer />
