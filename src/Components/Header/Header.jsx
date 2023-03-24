@@ -1,5 +1,5 @@
 import React from 'react';
-import lucky from "../../Assets/images/lucky.png";
+import lucky from "../../Assets/images/lucky-me-logo.png";
 
 
 function Header() {

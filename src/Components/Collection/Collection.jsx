@@ -14,7 +14,7 @@ import Web3 from "web3";
 import { loadWeb3 } from "../../apis/api";
 // import Connect_wallet_modal from "../Connect_wallet_modal/Connect_wallet_modal";
 
-import lucky from "../../Assets/images/lucky.png";
+import lucky from "../../Assets/images/lucky-me-logo.png";
 import { useNavigate } from "react-router-dom";
 
 const emg_data = [
