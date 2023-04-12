@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Collection from './Components/Collection/Collection';
 import ScrollUpButton from "react-scroll-up-button";
 import PrivateRoutes from './Components/Private'
+import Change_UserName from './Components/Change_UserName/Change_UserName';
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
           <Route element={<PrivateRoutes />}>
 
             <Route path="/admin_panel" element={<Collection />} />
+            <Route path="/Change_Admin" element={<Change_UserName />} />
+
           </Route>
 
 

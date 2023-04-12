@@ -188,7 +188,7 @@ function Collection() {
           .call();
         settotal_lottery_completed(total_lottery_completed);
         let total_reward = await loteryContractOf.methods.total_reward().call();
-        settotal_reward(webSupply.utils.fromWei(total_reward));
+        settotal_reward(parseInt(webSupply.utils.fromWei(total_reward)));
       } else {
         let total_entries = await loteryContractOf.methods
           .lottey_detail(Select_lottery_details)
@@ -201,7 +201,7 @@ function Collection() {
             total_entries.lottery_invested_amount
           ),
           lottery_completed: total_entries.lottery_completed,
-          lottery_reward: webSupply.utils.fromWei(total_entries.lottery_reward),
+          lottery_reward: parseInt(webSupply.utils.fromWei(total_entries.lottery_reward)),
         };
         console.log("total_entries", obj);
         settotal_entries(obj);
@@ -277,8 +277,14 @@ function Collection() {
                   <img src={lucky} alt="" />
                 </a>
                 <div className="d-flex">
-                  {/* <Connect_wallet_modal /> */}
-                  {console.log("Select_lottery_details", total_entries)}
+                <button
+                    class="custom-button2 navmainbt me-3"
+                    onClick={() => (
+                      history("/Change_Admin"), localStorage.removeItem("UserAuth")
+                    )}
+                  >
+                    Change Admin
+                  </button>
                   <button
                     class="custom-button2 navmainbt"
                     onClick={() => (
@@ -457,7 +463,7 @@ function Collection() {
               return (
                 <>
                   <tr className="boxx">
-                    <td>{index + 1}</td>
+                    <td>{item.index}</td>
                     <td className="large_address">{item.userAddress}</td>
                     <td className="responice_addres">
                       {item.userAddress?.substring(0, 8) +
@@ -488,13 +494,13 @@ function Collection() {
             </h1>
           </div>
         </div>
-        <div className="d-flex justify-content-center">
-          <Pagination
-            count={Math.ceil(get_lottery_Investor.length / postsPerPage)}
-            page={currentPage}
-            onChange={setPageNumber}
-          />
-        </div>
+            <div className="d-flex justify-content-center">
+              <Pagination
+                count={Math.ceil(get_lottery_Investor.length / postsPerPage)}
+                page={currentPage}
+                onChange={setPageNumber}
+              />
+            </div>
         <div className="text">
           <h1 className="title_admin">Lottery Winner</h1>
         </div>
@@ -570,7 +576,7 @@ function Collection() {
               return (
                 <>
                   <tr className="boxx">
-                    <td>{index + 1}</td>
+                    <td>{item.index}</td>
                     <td className="large_address">{item.userAddress}</td>
                     <td className="responice_addres">
                       {item.userAddress?.substring(0, 8) +
@@ -582,7 +588,7 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
 
-                    <td>{webSupply.utils.fromWei(item.reward)}</td>
+                    <td>{parseInt(webSupply.utils.fromWei(item.reward))}</td>
                     <td>
                       {item.time}
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}

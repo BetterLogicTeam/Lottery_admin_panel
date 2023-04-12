@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import lucky from "../../Assets/images/lucky-me-logo.png";
-import "./Login.css";
+
 import { FaFacebookF } from "react-icons/fa";
 import { AiOutlineTwitter } from "react-icons/ai";
 import { AiOutlineGoogle } from "react-icons/ai";
@@ -12,7 +12,7 @@ import { Modal } from "antd";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-function Login() {
+export default function Change_UserName() {
   let isuser = localStorage.getItem("UserAuth");
   const [modalShow, setModalShow] = React.useState(false);
   const [isLogin, setisLogin] = useState(false);
@@ -33,13 +33,13 @@ function Login() {
   const onFinish = async (values) => {
     setspinner(true);
     console.log("Success:", values);
-    let res = await axios.post("https://winner.archiecoin.online/admin_login", {
+    let res = await axios.post("https://winner.archiecoin.online/admin_register", {
       email: values.email,
       password: values.password,
     });
     if (res.data.success == true) {
       toast.success(res.data.msg);
-      history("/admin_panel");
+      history("/");
       localStorage.setItem("UserAuth", true);
       setisLogin(true);
       handleCancel();
@@ -55,26 +55,29 @@ function Login() {
   };
 
   return (
-    <div className="mb-5">
-      <div>
-        <div className="header-top-area">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="header-top-area-inner">
-                  <a href="" className="logo">
-                    <img src={lucky} alt="" />
-                  </a>
+    <div>
+      <div className="mb-5">
+        <div>
+          <div className="header-top-area">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-12">
+                  <div className="header-top-area-inner">
+                    <a href="" className="logo">
+                      <img src={lucky} alt="" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="main_form">
-        <div className="form_ittem">
-          <h1>Admin LogIn</h1>
-          <div className="inner_form_style">
+
+        <div className="main_form">
+          <div className="form_ittem">
+            <h1>Registration</h1>
+            <div className="inner_form_style">
+
             <Form
               name="basic"
               layout="vertical"
@@ -86,7 +89,7 @@ function Login() {
               autoComplete="off"
             >
               <Form.Item
-                label="Admin Email"
+                label="Enter New Email"
                 name="email"
                 rules={[
                   {
@@ -99,7 +102,7 @@ function Login() {
               </Form.Item>
 
               <Form.Item
-                label="Password"
+                label="Enter new Password"
                 name="password"
                 rules={[
                   {
@@ -124,16 +127,15 @@ function Login() {
                       </p>
                     </>
                   ) : (
-                    "Submit"
+                    "Registor"
                   )}
                 </Button>
               </Form.Item>
             </Form>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-export default Login;
