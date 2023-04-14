@@ -17,20 +17,22 @@ import Collection from './Components/Collection/Collection';
 import ScrollUpButton from "react-scroll-up-button";
 import PrivateRoutes from './Components/Private'
 import Change_UserName from './Components/Change_UserName/Change_UserName';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <div className="">
 
       <BrowserRouter>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <ScrollUpButton />
+        <Toaster />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<PrivateRoutes />}>
 
             <Route path="/admin_panel" element={<Collection />} />
-            <Route path="/Change_Admin" element={<Change_UserName />} />
+            <Route path="/Change_Password" element={<Change_UserName />} />
 
           </Route>
 

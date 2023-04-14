@@ -16,6 +16,7 @@ import { loadWeb3 } from "../../apis/api";
 
 import lucky from "../../Assets/images/lucky-me-logo.png";
 import { useNavigate } from "react-router-dom";
+import Loading_spinner from "../Loading/Loading_spinner";
 
 const emg_data = [
   {
@@ -109,10 +110,10 @@ function Collection() {
   console.log("isuser", isuser);
   const [get_lottery_Investor, setget_lottery_Investor] = useState([]);
   const [get_Winner, setget_Winner] = useState([]);
-  const [total_entries, settotal_entries] = useState();
-  const [total_invested_amount, settotal_invested_amount] = useState();
-  const [total_lottery_completed, settotal_lottery_completed] = useState();
-  const [total_reward, settotal_reward] = useState();
+  const [total_entries, settotal_entries] = useState(0);
+  const [total_invested_amount, settotal_invested_amount] = useState(0);
+  const [total_lottery_completed, settotal_lottery_completed] = useState(0);
+  const [total_reward, settotal_reward] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(5);
   const [currentPage1, setCurrentPage1] = useState(1);
@@ -131,10 +132,13 @@ function Collection() {
   const [Select_lottery_details, setSelect_lottery_details] = useState("All");
   const [total_entries_all, settotal_entries_all] = useState("");
   const [total_number_Amount, settotal_number_Amount] = useState(0);
+  const [IsLoading, setIsLoading] = useState(false)
 
   console.log("DateFilter", DateFilter);
   const get_lottery_investor = async () => {
     try {
+      setIsLoading(true)
+      const Url= process.env.REACT_APP_API_URL
       const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&gameNumber=${gameNumber}&card_Number=${selectCardNumber}`;
       let res = await axios.get(url);
       // let res = await axios.post(
@@ -147,18 +151,27 @@ function Collection() {
       // );
       console.log("get_Lotter_invester", res.data);
       setget_lottery_Investor(res.data);
+      setIsLoading(false)
     } catch (e) {
+      setIsLoading(false)
       console.log("Error While calling API Get lottery Investor", e);
     }
   };
   const get_lottery_Winner = async () => {
     try {
+      setIsLoading(true)
+
+      const BaseURL= process.env.REACT_APP_API_URL
       const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&gameNumber=${gameNumber_winner}&card_Number=${selectCardNumber_Winner}`;
       let res = await axios.get(url);
       console.log("get_lottery_Winner", res.data);
 
       setget_Winner(res.data);
+      setIsLoading(false)
+
     } catch (e) {
+      setIsLoading(false)
+
       console.log("Error While calling API Get lottery Investor", e);
     }
   };
@@ -268,6 +281,10 @@ function Collection() {
 
   return (
     <div>
+      
+      {IsLoading && <Loading_spinner/>
+      
+    }
       <div className="header-top-area">
         <div className="container">
           <div className="row">
@@ -280,10 +297,10 @@ function Collection() {
                 <button
                     class="custom-button2 navmainbt me-3"
                     onClick={() => (
-                      history("/Change_Admin"), localStorage.removeItem("UserAuth")
+                      history("/Change_Password"), localStorage.removeItem("UserAuth")
                     )}
                   >
-                    Change Admin
+                    Change Password
                   </button>
                   <button
                     class="custom-button2 navmainbt"
@@ -349,7 +366,8 @@ function Collection() {
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
                   {Select_lottery_details == "All"
                     ? total_invested_amount
-                    : total_entries?.lottery_invested_amount}
+                    : total_entries?.lottery_invested_amount}&nbsp;
+                    BUSD
                 </p>
                 {emg_data[1].img}
               </div>
@@ -371,7 +389,8 @@ function Collection() {
                 <p className="text-xl font-semibold text-slate-700 dark:text-navy-100">
                   {Select_lottery_details == "All"
                     ? total_reward
-                    : total_entries?.lottery_reward}
+                    : total_entries?.lottery_reward}&nbsp;
+                     BUSD
                 </p>
                 {emg_data[3].img}
               </div>
@@ -476,7 +495,7 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
 
-                    <td>{item.position}</td>
+                    <td>{item.position} BUSD</td>
                     <td>
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
                       {item.time}
@@ -588,7 +607,7 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
 
-                    <td>{parseInt(webSupply.utils.fromWei(item.reward))}</td>
+                    <td>{parseInt(webSupply.utils.fromWei(item.reward))} BUSD</td>
                     <td>
                       {item.time}
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
@@ -621,3 +640,4 @@ function Collection() {
 export default Collection;
 
 // node js and express API filter date
+// how change password in express Api 

@@ -10,7 +10,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Checkbox, Form, Input } from "antd";
 import { Modal } from "antd";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
+
 
 function Login() {
   let isuser = localStorage.getItem("UserAuth");
@@ -33,7 +34,10 @@ function Login() {
   const onFinish = async (values) => {
     setspinner(true);
     console.log("Success:", values);
-    let res = await axios.post("https://winner.archiecoin.online/admin_login", {
+
+    const Url= process.env.REACT_APP_API_URL
+    console.log('URL',Url);
+    let res = await axios.post(`https://winner.archiecoin.online/admin_login`, {
       email: values.email,
       password: values.password,
     });
@@ -41,6 +45,8 @@ function Login() {
       toast.success(res.data.msg);
       history("/admin_panel");
       localStorage.setItem("UserAuth", true);
+      localStorage.setItem("UserEmail", values.email);
+
       setisLogin(true);
       handleCancel();
     } else {
@@ -86,7 +92,7 @@ function Login() {
               autoComplete="off"
             >
               <Form.Item
-                label="Admin Email"
+                label="UserName"
                 name="email"
                 rules={[
                   {
@@ -124,7 +130,7 @@ function Login() {
                       </p>
                     </>
                   ) : (
-                    "Submit"
+                    "LogIn"
                   )}
                 </Button>
               </Form.Item>

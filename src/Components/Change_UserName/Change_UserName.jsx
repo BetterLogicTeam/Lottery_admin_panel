@@ -10,7 +10,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Checkbox, Form, Input } from "antd";
 import { Modal } from "antd";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
+
+
 
 export default function Change_UserName() {
   let isuser = localStorage.getItem("UserAuth");
@@ -20,6 +22,9 @@ export default function Change_UserName() {
   const [spinner, setspinner] = useState(false);
   let location = useLocation();
 
+ let userEmail= localStorage.getItem("UserEmail")
+ console.log("userEmail",userEmail);
+  
   const history = useNavigate();
   const showModal = () => {
     setIsModalOpen(true);
@@ -33,19 +38,20 @@ export default function Change_UserName() {
   const onFinish = async (values) => {
     setspinner(true);
     console.log("Success:", values);
-    let res = await axios.post("https://winner.archiecoin.online/admin_register", {
-      email: values.email,
-      password: values.password,
+    const Url= process.env.REACT_APP_API_URL
+    let res = await axios.put(`https://winner.archiecoin.online/changePassword/${userEmail}`, {
+      oldPassword: values.oldPassword,
+      newPassword: values.password,
     });
-    if (res.data.success == true) {
-      toast.success(res.data.msg);
+    if (res.data.message == "Password changed successfully") {
+      toast.success(res.data.message);
       history("/");
       localStorage.setItem("UserAuth", true);
       setisLogin(true);
       handleCancel();
     } else {
       setspinner(false);
-      toast.error(res.data.msg);
+      toast.error(res.data.message);
     }
 
     console.log("Login_Res", res.data.success);
@@ -53,6 +59,9 @@ export default function Change_UserName() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+
+  
 
   return (
     <div>
@@ -75,7 +84,7 @@ export default function Change_UserName() {
 
         <div className="main_form">
           <div className="form_ittem">
-            <h1>Registration</h1>
+            <h1>Change Password</h1>
             <div className="inner_form_style">
 
             <Form
@@ -88,21 +97,22 @@ export default function Change_UserName() {
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
+           
+
               <Form.Item
-                label="Enter New Email"
-                name="email"
+                label="Enter Old Password"
+                name="oldPassword"
                 rules={[
                   {
                     required: true,
-                    message: "Please input your Email!",
+                    message: "Please input your password!",
                   },
                 ]}
               >
-                <Input />
+                <Input.Password />
               </Form.Item>
-
               <Form.Item
-                label="Enter new Password"
+                label="Enter New Password"
                 name="password"
                 rules={[
                   {
@@ -113,6 +123,35 @@ export default function Change_UserName() {
               >
                 <Input.Password />
               </Form.Item>
+
+              <Form.Item
+                  name="confirm"
+                  label="Confirm Password"
+                  dependencies={["password"]}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your password!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(
+                            "Confirm password do not match!"
+                          )
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
+
+              
 
               <Form.Item className="d-flex justify-content-center">
                 <Button
@@ -127,7 +166,7 @@ export default function Change_UserName() {
                       </p>
                     </>
                   ) : (
-                    "Registor"
+                    "Change Password"
                   )}
                 </Button>
               </Form.Item>
@@ -139,3 +178,7 @@ export default function Change_UserName() {
     </div>
   );
 }
+
+
+// create User Regitraction and Save user details to a database and and Perform validation on user details Api in express
+// Create  LogIn user Api useing bcrypt in express
