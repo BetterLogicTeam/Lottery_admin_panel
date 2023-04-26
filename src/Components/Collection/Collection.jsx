@@ -141,14 +141,7 @@ function Collection() {
       const Url= process.env.REACT_APP_API_URL
       const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&gameNumber=${gameNumber}&card_Number=${selectCardNumber}`;
       let res = await axios.get(url);
-      // let res = await axios.post(
-      //   "https://winner.archiecoin.online/get_Lotter_invester",
-      //   {
-      //     card_Number: selectCardNumber,
-      //     date: DateFilter,
-      //     gameNumber: gameNumber,
-      //   }
-      // );
+    
       console.log("get_Lotter_invester", res.data);
       setget_lottery_Investor(res.data);
       setIsLoading(false)
@@ -305,7 +298,7 @@ function Collection() {
                   <button
                     class="custom-button2 navmainbt"
                     onClick={() => (
-                      history("/"), localStorage.removeItem("UserAuth")
+                      localStorage.removeItem("UserAuth")
                     )}
                   >
                     Log Out
@@ -607,7 +600,7 @@ function Collection() {
                     <td>{item.card_Number}</td>
                     <td>{item.gameNumber}</td>
 
-                    <td>{parseInt(webSupply.utils.fromWei(item.reward))} BUSD</td>
+                    <td>{parseFloat(webSupply.utils.fromWei(item.reward)).toFixed(2)} BUSD</td>
                     <td>
                       {item.time}
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
@@ -640,4 +633,5 @@ function Collection() {
 export default Collection;
 
 // node js and express API filter date
-// how change password in express Api 
+
+// how get filter data in monogodb express Api

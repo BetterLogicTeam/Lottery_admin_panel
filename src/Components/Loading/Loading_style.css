@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: rgb(156, 156, 156);
+    background: rgb(53, 53, 53);
     opacity: 0.9;
     position: fixed;
     top: 0;
@@ -13,7 +13,6 @@
     z-index: 100;
 
 }
-
 .loader {
     position: relative;
 
@@ -82,3 +81,9 @@
     display: flex;
     justify-content: space-between;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+    .loder_spinner {
+      animation: App-logo-spin infinite 10s linear;
+    }
+  }
