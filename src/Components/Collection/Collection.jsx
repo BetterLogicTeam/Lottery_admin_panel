@@ -139,7 +139,7 @@ function Collection() {
     try {
       setIsLoading(true)
       const Url= process.env.REACT_APP_API_URL
-      const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&gameNumber=${gameNumber}&card_Number=${selectCardNumber}`;
+      const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&card_Number=${selectCardNumber}`;
       let res = await axios.get(url);
     
       console.log("get_Lotter_invester", res.data);
@@ -155,7 +155,7 @@ function Collection() {
       setIsLoading(true)
 
       const BaseURL= process.env.REACT_APP_API_URL
-      const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&gameNumber=${gameNumber_winner}&card_Number=${selectCardNumber_Winner}`;
+      const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&card_Number=${selectCardNumber_Winner}`;
       let res = await axios.get(url);
       console.log("get_lottery_Winner", res.data);
 
@@ -395,7 +395,7 @@ function Collection() {
           <h2 className="title_admin">Lottery Invester</h2>
         </div>
         <div className="Admin_filter_card">
-          <div>
+          {/* <div>
             <p>Select Game Number</p>
             <input
               type="number"
@@ -403,7 +403,7 @@ function Collection() {
               placeholder="Game Number"
               onChange={(e) => setgameNumber(e.target.value)}
             />
-          </div>
+          </div> */}
           <div>
             <p>Start Date</p>
             <input
@@ -456,7 +456,7 @@ function Collection() {
               <th>#</th>
               <th>Investor Address</th>
               <th>Card Number</th>
-              <th>Game Number</th>
+              <th>Entries</th>
 
               <th>Amount</th>
               <th>Lottery Time</th>
@@ -517,7 +517,7 @@ function Collection() {
           <h1 className="title_admin">Lottery Winner</h1>
         </div>
         <div className="Admin_filter_card">
-          <div>
+          {/* <div>
             <p>Select Game Number</p>
             <input
               type="number"
@@ -525,7 +525,7 @@ function Collection() {
               placeholder="Game Number"
               onChange={(e) => setgameNumber_winner(e.target.value)}
             />
-          </div>
+          </div> */}
           <div>
             <p> Start Date</p>
             <input
@@ -578,7 +578,8 @@ function Collection() {
               <th>#</th>
               <th>Winner Address</th>
               <th>Card Number</th>
-              <th>Game Number</th>
+              {/* <th>Entries</th> */}
+
               <th>Reward</th>
               <th> Lottery Time</th>
             </tr>
@@ -598,9 +599,9 @@ function Collection() {
                         )}
                     </td>
                     <td>{item.card_Number}</td>
-                    <td>{item.gameNumber}</td>
+                    {/* <td>{item.gameNumber}</td> */}
 
-                    <td>{parseFloat(webSupply.utils.fromWei(item.reward)).toFixed(2)} BUSD</td>
+                    <td>{(webSupply.utils.fromWei(item.reward))} BUSD</td>
                     <td>
                       {item.time}
                       {/* {moment(item.time * 1000).format("M/D/YYYY h:m:s A")} */}
