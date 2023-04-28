@@ -139,7 +139,7 @@ function Collection() {
     try {
       setIsLoading(true)
       const Url= process.env.REACT_APP_API_URL
-      const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&card_Number=${selectCardNumber}`;
+      const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&card_Number=${selectCardNumber}&address=${gameNumber}`;
       let res = await axios.get(url);
     
       console.log("get_Lotter_invester", res.data);
@@ -154,14 +154,13 @@ function Collection() {
     try {
       setIsLoading(true)
 
+
       const BaseURL= process.env.REACT_APP_API_URL
-      const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&card_Number=${selectCardNumber_Winner}`;
+      const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&card_Number=${selectCardNumber_Winner}&address=${gameNumber_winner}`;
       let res = await axios.get(url);
       console.log("get_lottery_Winner", res.data);
-
       setget_Winner(res.data);
       setIsLoading(false)
-
     } catch (e) {
       setIsLoading(false)
 
@@ -395,15 +394,15 @@ function Collection() {
           <h2 className="title_admin">Lottery Invester</h2>
         </div>
         <div className="Admin_filter_card">
-          {/* <div>
-            <p>Select Game Number</p>
+          <div>
+            <p>Select Address</p>
             <input
-              type="number"
+              type="text"
               width="10%"
-              placeholder="Game Number"
+              placeholder="User Address"
               onChange={(e) => setgameNumber(e.target.value)}
             />
-          </div> */}
+          </div>
           <div>
             <p>Start Date</p>
             <input
@@ -517,15 +516,15 @@ function Collection() {
           <h1 className="title_admin">Lottery Winner</h1>
         </div>
         <div className="Admin_filter_card">
-          {/* <div>
-            <p>Select Game Number</p>
+          <div>
+            <p>Select Address</p>
             <input
-              type="number"
+              type="text"
               width="10%"
-              placeholder="Game Number"
+              placeholder="User Address"
               onChange={(e) => setgameNumber_winner(e.target.value)}
             />
-          </div> */}
+          </div>
           <div>
             <p> Start Date</p>
             <input
@@ -578,7 +577,7 @@ function Collection() {
               <th>#</th>
               <th>Winner Address</th>
               <th>Card Number</th>
-              {/* <th>Entries</th> */}
+              <th>Entries</th>
 
               <th>Reward</th>
               <th> Lottery Time</th>
@@ -599,7 +598,7 @@ function Collection() {
                         )}
                     </td>
                     <td>{item.card_Number}</td>
-                    {/* <td>{item.gameNumber}</td> */}
+                    <td>{item.gameNumber}</td>
 
                     <td>{(webSupply.utils.fromWei(item.reward))} BUSD</td>
                     <td>
@@ -636,3 +635,5 @@ export default Collection;
 // node js and express API filter date
 
 // how get filter data in monogodb express Api
+
+// how to solve  coinmarketcap.com api cors error
