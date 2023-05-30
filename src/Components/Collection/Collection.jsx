@@ -107,7 +107,7 @@ function Collection() {
   const [filterdata, setfilterdata] = useState("All");
   const history = useNavigate();
   let isuser = localStorage.getItem("UserAuth");
-  console.log("isuser", isuser);
+
   const [get_lottery_Investor, setget_lottery_Investor] = useState([]);
   const [get_Winner, setget_Winner] = useState([]);
   const [total_entries, settotal_entries] = useState(0);
@@ -134,7 +134,7 @@ function Collection() {
   const [total_number_Amount, settotal_number_Amount] = useState(0);
   const [IsLoading, setIsLoading] = useState(false)
 
-  console.log("DateFilter", DateFilter);
+
   const get_lottery_investor = async () => {
     try {
       setIsLoading(true)
@@ -142,7 +142,7 @@ function Collection() {
       const url = `https://winner.archiecoin.online/get_Lotter_invester?startDate=${StartDateFilter}&endDate=${DateFilter}&card_Number=${selectCardNumber}&address=${gameNumber}`;
       let res = await axios.get(url);
     
-      console.log("get_Lotter_invester", res.data);
+     
       setget_lottery_Investor(res.data);
       setIsLoading(false)
     } catch (e) {
@@ -158,7 +158,6 @@ function Collection() {
       const BaseURL= process.env.REACT_APP_API_URL
       const url = `https://winner.archiecoin.online/get_Winner_list?startDate=${DateFilter_Winner}&endDate=${endDate}&card_Number=${selectCardNumber_Winner}&address=${gameNumber_winner}`;
       let res = await axios.get(url);
-      console.log("get_lottery_Winner", res.data);
       setget_Winner(res.data);
       setIsLoading(false)
     } catch (e) {
@@ -198,7 +197,7 @@ function Collection() {
         let total_entries = await loteryContractOf.methods
           .lottey_detail(Select_lottery_details)
           .call();
-          console.log("total_entries",total_entries);
+         
 
         let obj = {
           lottery_entries: total_entries.lottery_entries,
@@ -208,7 +207,7 @@ function Collection() {
           lottery_completed: total_entries.lottery_completed,
           lottery_reward: parseInt(webSupply.utils.fromWei(total_entries.lottery_reward)),
         };
-        console.log("total_entries", obj);
+   
         settotal_entries(obj);
       }
     } catch (error) {
@@ -240,7 +239,7 @@ function Collection() {
 
   const Total_Amount = async () => {
     if (currentTokens.length !== 0) {
-      console.log("get_lottery_Investor", get_lottery_Investor);
+     
       // for(let i=0;i < Object.keys(get_lottery_Investor).length;i++){
       //   total_Amount = Number(total_Amount) + Number(get_lottery_Investor[i].position)
       // }
@@ -248,7 +247,7 @@ function Collection() {
       currentTokens.forEach((items) => {
         total_Amount = Number(total_Amount) + Number(items.position);
       });
-      console.log("total_Amount", total_Amount);
+  
       settotal_number_Amount(total_Amount);
     }
   };
@@ -297,7 +296,7 @@ function Collection() {
                   <button
                     class="custom-button2 navmainbt"
                     onClick={() => (
-                      localStorage.removeItem("UserAuth")
+                      history("/"), localStorage.removeItem("UserAuth")
                     )}
                   >
                     Log Out

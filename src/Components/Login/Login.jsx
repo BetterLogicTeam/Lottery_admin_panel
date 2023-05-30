@@ -33,10 +33,10 @@ function Login() {
   };
   const onFinish = async (values) => {
     setspinner(true);
-    console.log("Success:", values);
+    // console.log("Success:", values);
 
     const Url= process.env.REACT_APP_API_URL
-    console.log('URL',Url);
+    // console.log('URL',Url);
     let res = await axios.post(`https://winner.archiecoin.online/admin_login`, {
       email: values.email,
       password: values.password,
@@ -54,7 +54,7 @@ function Login() {
       toast.error(res.data.msg);
     }
 
-    console.log("Login_Res", res.data.success);
+    // console.log("Login_Res", res.data.success);
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);

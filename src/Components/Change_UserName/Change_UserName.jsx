@@ -23,7 +23,7 @@ export default function Change_UserName() {
   let location = useLocation();
 
  let userEmail= localStorage.getItem("UserEmail")
- console.log("userEmail",userEmail);
+//  console.log("userEmail",userEmail);
   
   const history = useNavigate();
   const showModal = () => {
@@ -37,7 +37,7 @@ export default function Change_UserName() {
   };
   const onFinish = async (values) => {
     setspinner(true);
-    console.log("Success:", values);
+    // console.log("Success:", values);
     const Url= process.env.REACT_APP_API_URL
     let res = await axios.put(`https://winner.archiecoin.online/changePassword/${userEmail}`, {
       oldPassword: values.oldPassword,
@@ -54,10 +54,10 @@ export default function Change_UserName() {
       toast.error(res.data.message);
     }
 
-    console.log("Login_Res", res.data.success);
+    // console.log("Login_Res", res.data.success);
   };
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    // console.log("Failed:", errorInfo);
   };
 
 
